@@ -1,30 +1,36 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-const MainScreen = ({ navigation }) => {
-    const posts = [/* 게시물 데이터 배열 */];
+// Import your screens here
+import MainFeed from './screens/MainFeed'; // 메인 피드 화면
+import CreatePost from './screens/CreatePost.js'; // 게시물 작성 화면
+import Comments from './screens/Comments.js'; // 댓글 화면
 
-    const renderItem = ({ item }) => (
-        <TouchableOpacity onPress={() => navigation.navigate('PostDetail', { postId: item.id })}>
-            <View>
-                <Text>{item.title}</Text>
-                <Text>{item.excerpt}</Text>
-            </View>
-        </TouchableOpacity>
-    );
+const Stack = createNativeStackNavigator();
 
-    return (
-        <View>
-            <FlatList
-                data={posts}
-                renderItem={renderItem}
-                keyExtractor={item => item.id}
-            />
-            <TouchableOpacity onPress={() => navigation.navigate('CreatePost')}>
-                <Text>Create New Post</Text>
-            </TouchableOpacity>
-        </View>
-    );
-};
+function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="MainFeed">
+        <Stack.Screen
+          name="MainFeed"
+          component={MainFeed}
+          options={{ title: 'Main' }}
+        />
+        <Stack.Screen
+          name="CreatePost"
+          component={CreatePost}
+          options={{ title: 'Post' }}
+        />
+        <Stack.Screen
+          name="Comments"
+          component={Comments}
+          options={{ title: 'Comment' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 
-export default MainScreen;
+export default App;
