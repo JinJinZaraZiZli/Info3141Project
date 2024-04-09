@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
-import { fetchPostById } from '../database';
+import React from "react";
+import { View, Text, StyleSheet, ScrollView, Button } from "react-native";
+import { fetchPostById, deletePost } from "../database";
 
 const PostDetails = ({ route, navigation }) => {
   const { postId } = route.params;
@@ -17,13 +17,24 @@ const PostDetails = ({ route, navigation }) => {
       <Text style={styles.info}>Written by: {post?.author}</Text>
       <Text style={styles.info}>On: {post?.created_at}</Text>
       <View style={styles.buttonContainer}>
-        <Button title="Edit" onPress={() => navigation.navigate('EditPost', { postId: post?.id })} />
-        <Button title="Delete" onPress={() => {
-          deletePost(postId, () => {
-            alert('Post deleted successfully');
-            navigation.goBack();
-          });
-        }} color="red" />
+        <Button
+          title="Edit"
+          onPress={() => navigation.navigate("EditPost", { postId: post?.id })}
+        />
+        <Button
+          title="Delete"
+          onPress={() => {
+            deletePost(postId, (success) => {
+              if (success) {
+                alert("Post deleted successfully");
+                navigation.goBack();
+              } else {
+                alert("Failed to delete post");
+              }
+            });
+          }}
+          color="red"
+        />
       </View>
     </ScrollView>
   );
@@ -32,29 +43,29 @@ const PostDetails = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    justifyContent: 'center',
-    alignItems: 'flex-start'
+    justifyContent: "center",
+    alignItems: "flex-start",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   content: {
     fontSize: 16,
-    marginBottom: 10
+    marginBottom: 10,
   },
   info: {
     fontSize: 14,
-    color: 'gray',
-    marginBottom: 5
+    color: "gray",
+    marginBottom: 5,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginTop: 20
-  }
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+    marginTop: 20,
+  },
 });
 
 export default PostDetails;
