@@ -1,35 +1,43 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
-import firebase from '../firebaseConfig';
+import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { insertPost } from '../database';
 
 const CreatePost = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [author, setAuthor] = useState('');
 
-  const handleSave = async () => {
-    await firebase.firestore().collection('posts').add({
-      title: title,
-      content: content,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  const handleSave = () => {
+    insertPost(title, content, author, (success, data) => {
+      if (success) {
+        Alert.alert('Success', 'Post added successfully');
+        navigation.goBack();
+      } else {
+        Alert.alert('Error', 'Failed to add post');
+      }
     });
-    navigation.goBack();
   };
 
   return (
     <View style={styles.container}>
       <TextInput
         placeholder="Title"
+        style={styles.input}
         value={title}
         onChangeText={setTitle}
-        style={styles.input}
       />
       <TextInput
         placeholder="Content"
-        value={content}
-        multiline
-        numberOfLines={4}
-        onChangeText={setContent}
         style={styles.input}
+        value={content}
+        onChangeText={setContent}
+        multiline
+      />
+      <TextInput
+        placeholder="Author"
+        style={styles.input}
+        value={author}
+        onChangeText={setAuthor}
       />
       <Button title="Save Post" onPress={handleSave} />
     </View>
@@ -39,13 +47,14 @@ const CreatePost = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    justifyContent: 'center',
+    padding: 20
   },
   input: {
-    marginBottom: 20,
+    marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#ddd',
     padding: 10,
+    height: 50
   }
 });
 
