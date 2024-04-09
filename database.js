@@ -48,7 +48,7 @@ export const fetchPostById = (id, callback) => {
       "SELECT * FROM posts WHERE id = ?",
       [id],
       (_, { rows }) => {
-        callback(rows._array[0]); // 결과의 첫 번째 항목 반환
+        callback(rows._array[0]);
       },
       (_, err) => {
         console.error("Error fetching post by ID", err);

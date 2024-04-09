@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, Button } from "react-native";
 import { fetchPostById, deletePost } from "../database";
+import * as MailComposer from "expo-mail-composer";
+import * as SMS from "expo-sms";
 
 const PostDetails = ({ route, navigation }) => {
   const { postId } = route.params;
@@ -9,6 +11,21 @@ const PostDetails = ({ route, navigation }) => {
   React.useEffect(() => {
     fetchPostById(postId, setPost);
   }, [postId]);
+
+  const sendEmail = () => {
+    MailComposer.composeAsync({
+      recipients: ["j_choi101747@fanshaweonline.ca"],
+      subject: `Sharing Post: ${post?.title}`,
+      body: `Hi,\n\nI wanted to share this post with you:\n\n${post?.title}\n${post?.content}\n\nBest Regards,`,
+    });
+  };
+
+  const sendSMS = () => {
+    SMS.sendSMSAsync(
+      ["5192807396"],
+      `Check out this post:\n${post?.title}\n${post?.content}`
+    );
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -35,6 +52,8 @@ const PostDetails = ({ route, navigation }) => {
           }}
           color="red"
         />
+        <Button title="Share via Email" onPress={sendEmail} />
+        <Button title="Share via SMS" onPress={sendSMS} />
       </View>
     </ScrollView>
   );
