@@ -5,7 +5,15 @@ const db = SQLite.openDatabase("board.db");
 const initDB = () => {
   db.transaction((tx) => {
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, content TEXT NOT NULL, author TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP);",
+      "CREATE TABLE IF NOT EXISTS posts (" +
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        "title TEXT NOT NULL, " +
+        "content TEXT NOT NULL, " +
+        "author TEXT, " +
+        "category TEXT, " +
+        "imageUri TEXT, " +
+        "created_at DATETIME DEFAULT CURRENT_TIMESTAMP" +
+        ");",
       [],
       () => console.log("Database and table created successfully"),
       (_, error) =>
@@ -14,11 +22,18 @@ const initDB = () => {
   });
 };
 
-export const insertPost = (title, content, author, callback) => {
+export const insertPost = (
+  title,
+  content,
+  author,
+  category,
+  imageUri,
+  callback
+) => {
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO posts (title, content, author) VALUES (?, ?, ?)",
-      [title, content, author],
+      "INSERT INTO posts (title, content, author, category, imageUri) VALUES (?, ?, ?, ?, ?)",
+      [title, content, author, category, imageUri],
       (_, result) => callback(true, result),
       (_, err) => {
         console.error("Error inserting post", err);
@@ -78,25 +93,25 @@ export const deletePost = (id, callback) => {
   });
 };
 
-export const updatePost = (id, title, content, callback) => {
-    const db = SQLite.openDatabase('board.db');
-    db.transaction(tx => {
-        tx.executeSql(
-            'UPDATE posts SET title = ?, content = ? WHERE id = ?',
-            [title, content, id],
-            (_, result) => {
-                if (result.rowsAffected > 0) {
-                    callback(true);
-                } else {
-                    callback(false);
-                }
-            },
-            (_, error) => {
-                console.error('Failed to update post', error);
-                callback(false);
-            }
-        );
-    });
+export const updatePost = (id, title, content, imageUri, callback) => {
+  const db = SQLite.openDatabase("board.db");
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE posts SET title = ?, content = ?, imageUri = ? WHERE id = ?",
+      [title, content, imageUri, id],
+      (_, result) => {
+        if (result.rowsAffected > 0) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      },
+      (transaction, error) => {
+        console.error("Failed to update post", error);
+        callback(false);
+      }
+    );
+  });
 };
 
 export default initDB;
